@@ -27,6 +27,7 @@ scripts/*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+vercel.json
 
 .vim
 .iml
