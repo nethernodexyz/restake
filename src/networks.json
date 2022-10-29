@@ -245,6 +245,10 @@
     "ownerAddress": "pasgvaloper1c42pgxrg652f2f26dfgj40a7y5rhkt0wm9hwfj"
   },
   {
+    "name": "jackal",
+    "ownerAddress": "jklvaloper1fjv9s3m2cg8few68med8wjdh2e0stvnps8mvfa"
+  },
+  {
     "name": "stride",
     "ownerAddress": "stridevaloper1dvgnqmgehv3kmtvu3e6xuujaxu9c9wepx6dmze",
     "authzSupport": false,
