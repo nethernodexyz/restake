@@ -13,7 +13,7 @@ import ProposalModal from './ProposalModal';
 import Proposal from '../utils/Proposal.mjs';
 import Vote from '../utils/Vote.mjs';
 
-function Voting(props) {
+function Governance(props) {
   const { address, wallet, network } = props
   const [showModal, setShowModal] = useState()
   const [proposal, setProposal] = useState()
@@ -85,7 +85,6 @@ function Voting(props) {
     try {
       let newProposals = await props.queryClient.getProposals()
       newProposals = newProposals.map(el => Proposal(el))
-      setError()
       setProposals(sortProposals(newProposals))
       setTallies(newProposals.reduce((sum, proposal) => {
         if (!_.every(Object.values(proposal.final_tally_result), el => el === '0')) {
@@ -137,13 +136,13 @@ function Voting(props) {
     setProposal(proposal)
     setShowModal(true)
     if (proposal.proposal_id !== params.proposalId) {
-      navigate(`/${network.name}/vote/${proposal.proposal_id}`)
+      navigate(`/${network.name}/govern/${proposal.proposal_id}`)
     }
   }
 
   function closeProposal(){
     setShowModal(false)
-    navigate(`/${network.name}/vote`)
+    navigate(`/${network.name}/govern`)
   }
 
   function onVote(proposal, vote){
@@ -211,4 +210,4 @@ function Voting(props) {
   );
 }
 
-export default Voting;
+export default Governance;

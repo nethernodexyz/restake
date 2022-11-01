@@ -19,13 +19,13 @@ export default class SignerProvider {
       return await this.getKey(network)
     } catch (e) {
       if(!this.suggestChainSupport){
-        this.handleEnableError(network, e)
+        throw(e)
       }
       try {
         await this.suggestChain(network)
         return await this.getKey(network)
       } catch (s) {
-        this.handleSuggestError(network, e)
+        throw(s)
       }
     }
   }
@@ -41,6 +41,9 @@ export default class SignerProvider {
   async getKey(network){
     const { chainId } = network
     const key = await this.provider.getKey(chainId)
+    if(!network.ledgerSupport && (key.isNanoLedger || key.isHardware)){
+      throw new Error('Ledger support is coming soon')
+    }
     return key
   }
 
@@ -55,14 +58,6 @@ export default class SignerProvider {
     }else{
       throw new Error(`${network.prettyName} (${network.chainId}) is not supported`)
     }
-  }
-
-  handleEnableError(network, error){
-    throw(error)
-  }
-
-  handleSuggestError(network, error){
-    throw(error)
   }
 
   setOptions(options){

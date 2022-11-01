@@ -1,11 +1,7 @@
-import { Link } from 'react-router-dom'
 import {
   OverlayTrigger, 
   Tooltip
 } from 'react-bootstrap'
-import {
-  HeartPulse
-} from 'react-bootstrap-icons'
 
 import StakingRewardsIcon from '../assets/staking-rewards.svg'
 import StakingRewardsWhiteIcon from '../assets/staking-rewards-white.svg'
@@ -19,20 +15,6 @@ function ValidatorServices(props) {
   const { validator, network, theme } = props
 
   const services = []
-
-  if(Object.entries(validator.public_nodes || {}).length){
-    services.push({
-      key: 'nodes',
-      tooltip: 'Provides public nodes used by REStake and other apps',
-      render: () => {
-        return (
-          <Link to={`/${network.path}/${validator.address}`} className="text-reset">
-            <HeartPulse height={props.height || 18} width={props.width || 18} className="d-block" />
-          </Link>
-        )
-      }
-    })
-  }
 
   if(validator.services?.staking_rewards){
     let verified = validator.services.staking_rewards.verified
@@ -76,11 +58,7 @@ function ValidatorServices(props) {
     })
   }
 
-  const showServices = services.filter(el => {
-    if(props.show && !props.show.includes(el.key)) return false
-    if(props.exclude && props.exclude.includes(el.key)) return false
-    return true
-  })
+  const showServices = services.filter(el => !props.show || props.show.includes(el.key))
 
   if(!showServices.length) return null
 
@@ -90,17 +68,15 @@ function ValidatorServices(props) {
         return (
           <OverlayTrigger
             placement="top"
-            key={service.key}
             rootClose={true}
+            key={service.key}
             overlay={
               <Tooltip id={`tooltip-${service.key}`}>{service.tooltip}</Tooltip>
             }
           >
-            {service.render ? service.render() : (
-              <a href={service.url} target={service.target || '_blank'}>
-                <img src={service.icon} height={props.height || 20} className="d-block" />
-              </a>
-            )}
+            <a href={service.url} target="_blank">
+              <img src={service.icon} height={20} className="d-block" />
+            </a>
           </OverlayTrigger>
         )
       })}
