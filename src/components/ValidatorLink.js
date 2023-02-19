@@ -13,12 +13,12 @@ function ValidatorLink(props) {
   }
 
   if(!website()){
-    return props.children || <ValidatorName validator={validator} />
+    return props.children || <ValidatorName validator={validator} hideWarning={props.hideWarning} />
   }
 
   return (
     <a href={website()} target="_blank" rel="noreferrer" className={[props.className, "text-reset text-decoration-none"].join(' ')}>
-      {props.children || <ValidatorName validator={validator} />}
+      {props.children || <ValidatorName validator={validator} hideWarning={props.hideWarning} />}
     </a>
   );
 }

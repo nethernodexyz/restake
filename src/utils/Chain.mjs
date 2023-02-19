@@ -6,7 +6,6 @@ const Chain = (data) => {
   const baseAsset = assets[0]
   const { cosmos_sdk_version } = data.versions || {}
   const sdkAuthzAminoSupport = validate(cosmos_sdk_version) && compareVersions(cosmos_sdk_version, '0.46') >= 0
-  const authzSupport = data.authzSupport ?? data.params?.authz
 
   return {
     ...data,
@@ -15,7 +14,7 @@ const Chain = (data) => {
     prefix: data.prefix || data.bech32_prefix,
     slip44: data.slip44 || 118,
     estimatedApr: data.params?.calculated_apr,
-    authzSupport,
+    authzSupport: data.authzSupport ?? data.params?.authz,
     authzAminoSupport: data.authzAminoSupport ?? sdkAuthzAminoSupport ?? false,
     denom: data.denom || baseAsset?.base?.denom,
     display: data.display || baseAsset?.display?.denom,

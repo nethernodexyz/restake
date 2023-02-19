@@ -16,7 +16,6 @@ import RevokeGrant from './RevokeGrant';
 import Coins from './Coins';
 import GrantModal from './GrantModal';
 import Favourite from './Favourite';
-import Address from './Address'
 
 function Grants(props) {
   const { address, wallet, network, operators, validators, grants } = props
@@ -143,10 +142,10 @@ function Grants(props) {
           {filter.group === 'grantee' ? (
             <div className="d-flex">
               <Favourite favourites={props.favouriteAddresses} value={granter} toggle={props.toggleFavouriteAddress} />
-              <span className="ps-2">{favourite?.label || <Address address={granter} />}</span>
+              <span className="ps-2">{favourite?.label || granter}</span>
             </div>
           ) : (
-            validator ? validator.moniker : favourite?.label || <Address address={grantee} />
+            validator ? validator.moniker : favourite?.label || grantee
           )}
         </td>
         <td>

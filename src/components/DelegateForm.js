@@ -1,4 +1,6 @@
-import React, { useState, useReducer } from 'react';
+import React from 'react'
+import Coins from './Coins'
+import { buildExecMessage, coin } from '../utils/Helpers.mjs'
 import { MsgDelegate, MsgUndelegate, MsgBeginRedelegate } from "cosmjs-types/cosmos/staking/v1beta1/tx";
 
 import {
@@ -9,75 +11,77 @@ import {
 
 import { pow, multiply, divide, subtract, bignumber } from 'mathjs'
 
-import Coins from './Coins'
-import { buildExecMessage, coin } from '../utils/Helpers.mjs'
+class DelegateForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {amount: '', memo: ''}
 
-function DelegateForm(props) {
-  const { network, wallet, address, validator, selectedValidator, action } = props
-  const [state, setState] = useReducer(
-    (state, newState) => ({ ...state, ...newState }),
-    { amount: '', memo: '' }
-  )
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
 
-  function handleInputChange(event) {
+  handleInputChange(event) {
     const target = event.target;
     const value = target.value;
     const name = target.name;
 
-    setState({
+    this.setState({
       [name]: value
     });
   }
 
-  async function handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
 
-    setState({ loading: true, error: null })
+    this.setState({loading: true, error: null})
 
-    const amount = state.amount
-    const memo = state.memo
-    const client = props.signingClient
+    const wallet = this.props.wallet
+    const amount = this.state.amount
+    const memo = this.state.memo
+    const client = this.props.signingClient
 
-    const decimals = pow(10, network.decimals)
+    const decimals = pow(10, this.props.network.decimals)
     const denomAmount = bignumber(multiply(amount, decimals))
 
-    let messages = buildMessages(denomAmount)
+    let messages = this.buildMessages(denomAmount)
     let gas
     try {
-      gas = await client.simulate(wallet.address, messages)
+       gas = await client.simulate(wallet.address, messages)
     } catch (error) {
-      setState({ loading: false, error: error.message })
+      this.setState({ loading: false, error: error.message })
       return
     }
 
     client.signAndBroadcast(wallet.address, messages, gas, memo).then((result) => {
       console.log("Successfully broadcasted:", result);
-      setState({ loading: false, error: null })
-      props.onDelegate()
+      this.setState({loading: false, error: null})
+      this.props.onDelegate()
     }, (error) => {
       console.log('Failed to broadcast:', error)
-      setState({ loading: false, error: `Failed to broadcast: ${error.message}` })
+      this.setState({ loading: false, error: `Failed to broadcast: ${error.message}` })
     })
   }
 
-  function buildMessages(amount) {
+  buildMessages(amount){
+    const { wallet, address } = this.props
+    const validatorAddress = this.props.selectedValidator.operator_address
     let message, type, typeUrl, value
-    if (action === 'redelegate') {
+    if(this.props.redelegate){
       type = MsgBeginRedelegate
       typeUrl = "/cosmos.staking.v1beta1.MsgBeginRedelegate"
       value = {
         delegatorAddress: address,
-        validatorSrcAddress: validator.operator_address,
-        validatorDstAddress: selectedValidator.operator_address,
-        amount: coin(amount, network.denom)
+        validatorSrcAddress: this.props.validator.operator_address,
+        validatorDstAddress: validatorAddress,
+        amount: coin(amount, this.props.network.denom)
       }
-    } else {
-      type = action === 'undelegate' ? MsgUndelegate : MsgDelegate
-      typeUrl = "/cosmos.staking.v1beta1.Msg" + (action === 'undelegate' ? 'Undelegate' : 'Delegate')
+    }else{
+      type = this.props.undelegate ? MsgUndelegate : MsgDelegate
+      typeUrl = "/cosmos.staking.v1beta1.Msg" + (this.props.undelegate ? 'Undelegate' : 'Delegate')
       value = {
         delegatorAddress: address,
-        validatorAddress: validator.operator_address,
-        amount: coin(amount, network.denom)
+        validatorAddress: validatorAddress,
+        amount: coin(amount, this.props.network.denom)
       }
     }
     if (wallet?.address !== address) {
@@ -94,99 +98,87 @@ function DelegateForm(props) {
     return [message]
   }
 
-  function hasPermission() {
-    const permission = action === 'redelegate' ? 'BeginRedelegate' : action === 'undelegate' ? 'Undelegate' : 'Delegate'
-    return wallet?.hasPermission(address, permission)
+  hasPermission(){
+    const permission = this.props.redelegate ? 'BeginRedelegate' : this.props.undelegate ? 'Undelegate' : 'Delegate'
+    return this.props.wallet?.hasPermission(this.props.address, permission)
   }
 
-  async function setAvailableAmount() {
-    if (!wallet) return
+  async setAvailableAmount(){
+    if(!this.props.wallet) return
 
-    setState({ error: undefined })
-    const messages = buildMessages(multiply(availableBalance().amount, 0.95))
-    const decimals = pow(10, network.decimals)
-    const balance = bignumber(availableBalance().amount)
-    if (['redelegate', 'undelegate'].includes(action)) {
-      return setState({ amount: divide(balance, decimals) })
+    this.setState({error: undefined})
+    const messages = this.buildMessages(multiply(this.props.availableBalance.amount, 0.95))
+    const decimals = pow(10, this.props.network.decimals)
+    const balance = bignumber(this.props.availableBalance.amount)
+    if(this.props.redelegate || this.props.undelegate){
+      return this.setState({amount: divide(balance, decimals)})
     }
-    props.signingClient.simulate(wallet.address, messages).then(gas => {
-      const gasPrice = props.signingClient.getFee(gas).amount[0].amount
+    this.props.signingClient.simulate(this.props.wallet.address, messages).then(gas => {
+      const gasPrice = this.props.signingClient.getFee(gas).amount[0].amount
       const saveTxFeeNum = 10
       const amount = divide(subtract(balance, multiply(gasPrice, saveTxFeeNum)), decimals)
 
-      setState({ amount: amount > 0 ? amount : 0 })
+      this.setState({amount: amount > 0 ? amount : 0})
     }, error => {
-      setState({ error: error.message })
+      this.setState({error: error.message})
     })
   }
 
-  function availableBalance() {
-    if (['redelegate', 'undelegate'].includes(action)) {
-      return (props.delegation || {}).balance;
-    } else {
-      return props.balance;
-    }
-  }
-
-  function actionText() {
-    if (action === 'redelegate') return 'Redelegate'
-    if (action === 'undelegate') return 'Undelegate'
+  actionText(){
+    if(this.props.redelegate) return 'Redelegate'
+    if(this.props.undelegate) return 'Undelegate'
     return 'Delegate'
   }
 
-  function denom() {
-    return network.symbol
+  denom(){
+    return this.props.network.symbol
   }
 
-  function step() {
-    return 1 / pow(10, network.decimals)
+  step(){
+    return 1 / pow(10, this.props.network.decimals)
   }
 
-  return (
-    <>
-      {state.error &&
+  render() {
+    return (
+      <>
+        {this.state.error &&
         <Alert variant="danger">
-          {state.error}
+          {this.state.error}
         </Alert>
-      }
-        <Form onSubmit={handleSubmit}>
-          <fieldset disabled={!address || !wallet}>
+        }
+        <Form onSubmit={this.handleSubmit}>
+          <fieldset disabled={!this.props.address || !this.props.wallet}>
             <Form.Group className="mb-3">
               <Form.Label>Amount</Form.Label>
               <div className="mb-3">
                 <div className="input-group">
-                  <Form.Control name="amount" type="number" min={0} step={step()} placeholder="10" required={true} value={state.amount} onChange={handleInputChange} />
-                  <span className="input-group-text">{denom()}</span>
+                  <Form.Control name="amount" type="number" min={0} step={this.step()} placeholder="10" required={true} value={this.state.amount} onChange={this.handleInputChange} />
+                  <span className="input-group-text">{this.denom()}</span>
                 </div>
-                {availableBalance() &&
-                  <div className="form-text text-end"><span role="button" onClick={() => setAvailableAmount()}>
-                    Available: <Coins coins={availableBalance()} asset={network.baseAsset} fullPrecision={true} hideValue={true} />
+                {this.props.availableBalance &&
+                  <div className="form-text text-end"><span role="button" onClick={() => this.setAvailableAmount()}>
+                    Available: <Coins coins={this.props.availableBalance} asset={this.props.network.baseAsset} fullPrecision={true} hideValue={true} />
                   </span></div>
                 }
               </div>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Memo</Form.Label>
-              <Form.Control name="memo" as="textarea" rows={3} value={state.memo} onChange={handleInputChange} />
+              <Form.Control name="memo" as="textarea" rows={3} value={this.state.memo} onChange={this.handleInputChange} />
             </Form.Group>
-            <div className="d-flex justify-content-end gap-2">
-              {!state.loading
-                ? (
-                <>
-                  {props.closeForm && (
-                    <Button variant="secondary" onClick={props.closeForm}>Cancel</Button>
-                  )}
-                  <Button type="submit" disabled={!hasPermission()} className="btn btn-primary">{actionText()}</Button>
-                </>
-                ) : <Button className="btn btn-primary" type="button" disabled>
+            <p className="text-end">
+              {!this.state.loading
+                ? <Button type="submit" disabled={!this.hasPermission()} className="btn btn-primary">{this.actionText()}</Button>
+                : <Button className="btn btn-primary" type="button" disabled>
                   <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>&nbsp;
                 </Button>
               }
-            </div>
+            </p>
           </fieldset>
         </Form>
-    </>
-  )
+      </>
+    )
+  }
 }
 
 export default DelegateForm

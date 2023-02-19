@@ -85,13 +85,4 @@ export default class KeplrMobileSignerProvider extends SignerProvider {
       return Promise.resolve();
     }
   }
-
-  handleEnableError(network, error){
-    switch (error?.message) {
-      case `There is no chain info for ${network.chainId}`:
-        throw new Error(`${network.prettyName} (${network.chainId}) is not supported`)
-      default:
-        super.handleEnableError(network, error)
-    }
-  }
 }
