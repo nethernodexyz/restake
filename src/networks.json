@@ -29,13 +29,14 @@
   },
   {
     "name": "chihuahua",
-    "ownerAddress": "chihuahuavaloper19vwcee000fhazmpt4ultvnnkhfh23ppwxll8zz",
+    "ownerAddress": "chihuahuavaloper1t85yx95l5pajl9hwkeztawqf8sg9uh4lglgu9w",
     "gasPrice": "1uhuahua",
     "gasPricePrefer": "1uhuahua"
   },
   {
     "name": "gravitybridge",
-    "gasPrice": "0.025ugraviton"
+    "gasPrice": "0.025ugraviton",
+    "ownerAddress": "gravityvaloper19lvf8euz83lx7uzmuvzxxu5j55cezzhn38aqrk"
   },
   {
     "name": "regen",
@@ -80,7 +81,7 @@
     "name": "desmos",
     "gasPrice": "0.001udsm",
     "authzSupport": true,
-    "authzAminoSupport": true
+    "authzAminoSupport": true,
     "ownerAddress": "desmosvaloper1lf3fg79gf2qf6ept7ec22kjd8s6gj3swr2ca0v"
   },
   {
@@ -91,7 +92,7 @@
   {
     "name": "evmos",
     "txTimeout": 120000,
-    "ownerAddress": "evmosvaloper1umk407eed7af6anvut6llg2zevnf0dn0feqqny",
+    "ownerAddress": "evmosvaloper1ulkhal0g0fmgsjlf8q7mdd46m6t9sqkhmpfvfd",
     "maxPerDay": 1,
     "authzAminoSupport": false
   },
@@ -110,12 +111,12 @@
   },
   {
     "name": "comdex",
-    "ownerAddress": "comdexvaloper17f70yjkvmvld379904jaddx9h0f74n32pjtmp6"
+    "ownerAddress": "comdexvaloper14yh3sqetnphupx2r4jrjctpsqqg7jqmnmzpxc4"
   },
   {
     "name": "cheqd",
     "gasPrice": "25ncheq",
-    "ownerAddress": "	cheqdvaloper1qsp3a2qd6km9g0hczsac8279wcwmzmvzgvre8w"
+    "ownerAddress": "cheqdvaloper1qsp3a2qd6km9g0hczsac8279wcwmzmvzgvre8w"
   },
   {
     "name": "umee"
@@ -276,7 +277,7 @@
   },
   {
     "name": "jackal",
-    "ownerAddress": "jklvaloper1rdyunvvqg2l3723hlyjvvsnkd4vg338uar8q2s"
+    "ownerAddress": "jklvaloper1fjv9s3m2cg8few68med8wjdh2e0stvnps8mvfa"
   },
   {
     "name": "oraichain",
@@ -287,6 +288,6 @@
   },
   {
     "name": "mars",
-    "ownerAddress": "marsvaloper1hvtaqw9mlwc0a4cdx6g3klk8acfc6z3yazzk8a"
+    "ownerAddress": "marsvaloper143a2ntqmppme7tunrnflq2ydj2axq9klkgqawn"
   }
 ]
