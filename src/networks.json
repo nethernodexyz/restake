@@ -47,7 +47,7 @@
   },
   {
     "name": "terra",
-    "gasPrice": "5.665uluna"
+    "gasPrice": "28.325uluna"
   },
   {
     "name": "terra2",
@@ -284,5 +284,9 @@
   },
   {
     "name": "acrechain"
+  },
+  {
+    "name": "mars",
+    "ownerAddress": "marsvaloper1hvtaqw9mlwc0a4cdx6g3klk8acfc6z3yazzk8a"
   }
 ]
