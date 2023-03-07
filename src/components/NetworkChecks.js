@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash'
 import { CheckCircle, XCircle, InfoCircle } from "react-bootstrap-icons";
-import { round } from 'mathjs'
 import TooltipIcon from './TooltipIcon.js';
 import Coingecko from '../assets/coingecko.png'
 
@@ -67,7 +66,7 @@ function NetworkChecks(props) {
           failClass: 'success',
         }),
         renderCheck({
-          title: <strong>{`${round(network.estimatedApr * 100, 2).toLocaleString()}% APR`}</strong>,
+          title: <strong>{`${Math.round(network.estimatedApr * 100).toLocaleString()}% APR`}</strong>,
           failTitle: 'APR unknown',
           state: network.estimatedApr,
           identifier: 'apr',

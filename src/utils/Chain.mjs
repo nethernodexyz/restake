@@ -20,7 +20,7 @@ const Chain = (data) => {
     prefix: data.prefix || data.bech32_prefix,
     slip44: data.slip44 || 118,
     estimatedApr: data.params?.calculated_apr,
-    authzSupport,
+    authzSupport: data.authzSupport ?? data.params?.authz,
     authzAminoSupport: data.authzAminoSupport ?? sdkAuthzAminoSupport ?? false,
     apiVersions,
     denom: data.denom || baseAsset?.base?.denom,

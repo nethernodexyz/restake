@@ -18,7 +18,6 @@ const DARK_THEME = 'superhero'
 function NetworkFinder() {
   const params = useParams();
   const navigate = useNavigate()
-  const voteMatch = useMatch("/:network/vote/*");
   const govMatch = useMatch("/:network/govern/*");
   const grantMatch = useMatch("/:network/grants");
 
@@ -92,8 +91,8 @@ function NetworkFinder() {
       operators: network.getOperators(),
       loading: false
     });
-    if (govMatch || voteMatch) {
-      setActive('voting', network);
+    if (govMatch) {
+      setActive('governance', network);
     } else if(grantMatch && network.authzSupport) {
       setActive('grants', network);
     } else {
@@ -107,8 +106,8 @@ function NetworkFinder() {
       case 'grants':
         navigate("/" + network.path + '/grants');
         break;
-      case 'voting':
-        navigate("/" + network.path + '/vote');
+      case 'governance':
+        navigate("/" + network.path + '/govern');
         break;
       case 'delegations':
         navigate("/" + network.path);
@@ -171,7 +170,7 @@ function NetworkFinder() {
     if (!params.network) {
       setState({ active: 'networks' })
     }
-  }, [govMatch, voteMatch, grantMatch, params.network])
+  }, [govMatch, params.network])
 
   useEffect(() => {
     if (Object.keys(state.networks).length && (!state.network || state.network.path !== params.network)) {
@@ -189,7 +188,7 @@ function NetworkFinder() {
         return network.connect().then(() => {
           if (network.connected) {
             setState({
-              active: grantMatch ? 'grants' : (voteMatch || govMatch) ? 'voting' : 'delegations',
+              active: grantMatch ? 'grants' : govMatch ? 'governance' : 'delegations',
               network: network,
               queryClient: network.queryClient,
               validators: network.getValidators(),

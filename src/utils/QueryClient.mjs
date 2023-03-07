@@ -1,5 +1,4 @@
 import axios from "axios";
-import axiosRetry from 'axios-retry';
 import _ from "lodash";
 
 const QueryClient = async (chainId, restUrls, opts) => {
@@ -285,8 +284,7 @@ const QueryClient = async (chainId, restUrls, opts) => {
     getGrants,
     getGranteeGrants,
     getGranterGrants,
-    getWithdrawAddress,
-    getTransactions
+    getWithdrawAddress
   };
 };
 
